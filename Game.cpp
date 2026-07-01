@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Game.h"
-#include <Vector>
+#include <vector>
 
 Game::Game()
 {
@@ -21,12 +21,28 @@ void Game::Reset()
 	ResetBall();
 
 	// TODO #2 - Add this brick and 4 more bricks to the vector
-	brick.width = 10;
-	brick.height = 2;
-	brick.x_position = 0;
-	brick.y_position = 5;
-	brick.doubleThick = true;
-	brick.color = ConsoleColor::DarkGreen;
+
+	Box tempBrick;
+	tempBrick.width = 10;
+	tempBrick.height = 2;
+	tempBrick.x_position = 0;
+	tempBrick.y_position = 5;
+	tempBrick.doubleThick = true;
+	tempBrick.color = ConsoleColor::DarkGreen;
+	brick.push_back(tempBrick);
+
+	for (int i = 1; i < 5; i++)
+	{
+		Box tempBrick2;
+		tempBrick2.width = 10;
+		tempBrick2.height = 2;
+		tempBrick2.x_position = i * 10;
+		tempBrick2.y_position = 5;
+		tempBrick2.doubleThick = true;
+		tempBrick2.color = ConsoleColor::DarkGreen;
+		brick.push_back(tempBrick2);
+
+	}
 }
 
 void Game::ResetBall()
