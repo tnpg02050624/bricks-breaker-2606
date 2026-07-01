@@ -79,7 +79,7 @@ bool Game::Update()
 //  All rendering, including text, should occur in the Render function
 void Game::Render() const
 {
-	std::string winMsg = "You win! Press ‘R’ to play again.";
+	std::string winMsg = "You win! Press 'R' to play again.";
 
 	Console::Lock(true);
 	Console::Clear();
@@ -94,7 +94,7 @@ void Game::Render() const
 	}
 
 	// TODO #3 - Update render to render all bricks
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < brick.size(); i++)
 	{
 		brick[i].Draw();
 	}
@@ -116,6 +116,7 @@ void Game::CheckCollision()
 			if (brick[i].color == ConsoleColor::Black)
 			{
 				brick.erase(brick.begin() + i);
+				break;
 			}
 		}
 	}
