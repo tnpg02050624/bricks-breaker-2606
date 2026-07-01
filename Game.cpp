@@ -79,11 +79,19 @@ bool Game::Update()
 //  All rendering, including text, should occur in the Render function
 void Game::Render() const
 {
+	std::string winMsg = "You win! Press ‘R’ to play again.";
+
 	Console::Lock(true);
 	Console::Clear();
 	
 	paddle.Draw();
 	ball.Draw();
+
+	if (brick.empty() == true)
+	{
+		Console::SetCursorPosition(((WINDOW_WIDTH / 2) - (winMsg.length() / 2)), (WINDOW_HEIGHT / 2));
+		std::cout << winMsg << std::endl;
+	}
 
 	// TODO #3 - Update render to render all bricks
 	for (int i = 0; i < 5; i++)
@@ -113,7 +121,11 @@ void Game::CheckCollision()
 	}
 
 	// TODO #6 - If no bricks remain, pause ball and display (render) victory text with R to reset
-
+	if (brick.empty() == true)
+	{
+		ball.y_velocity = 0;
+		ball.x_velocity = 0;
+	}
 
 	if (paddle.Contains(ball.x_position + ball.x_velocity, ball.y_velocity + ball.y_position))
 	{
