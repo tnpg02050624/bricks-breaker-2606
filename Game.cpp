@@ -18,6 +18,7 @@ void Game::Reset()
 
 	ball.visage = 'O';
 	ball.color = ConsoleColor::Cyan;
+	brick.clear();
 	ResetBall();
 
 	// TODO #2 - Add this brick and 4 more bricks to the vector
@@ -80,6 +81,7 @@ bool Game::Update()
 void Game::Render() const
 {
 	std::string winMsg = "You win! Press 'R' to play again.";
+	std::string loseMsg = "You lose.  Press 'R' to play again.";
 
 	Console::Lock(true);
 	Console::Clear();
@@ -89,8 +91,14 @@ void Game::Render() const
 
 	if (brick.empty() == true)
 	{
-		Console::SetCursorPosition(((WINDOW_WIDTH / 2) - (winMsg.length() / 2)), (WINDOW_HEIGHT / 2));
+		Console::SetCursorPosition(((WINDOW_WIDTH / 2) - (static_cast<int>(winMsg.length()) / 2)), (WINDOW_HEIGHT / 2));
 		std::cout << winMsg << std::endl;
+	}
+
+	if (ball.y_position == WINDOW_HEIGHT - 1)
+	{
+		Console::SetCursorPosition(((WINDOW_WIDTH / 2) - (static_cast<int>(loseMsg.length()) /2)),  (WINDOW_HEIGHT / 2));
+		std::cout << loseMsg << std::endl;
 	}
 
 	// TODO #3 - Update render to render all bricks
@@ -122,10 +130,9 @@ void Game::CheckCollision()
 	}
 
 	// TODO #6 - If no bricks remain, pause ball and display (render) victory text with R to reset
-	if (brick.empty() == true)
+	if (brick.empty() && ball.moving)
 	{
-		ball.y_velocity = 0;
-		ball.x_velocity = 0;
+		ball.moving = !ball.moving;
 	}
 
 	if (paddle.Contains(ball.x_position + ball.x_velocity, ball.y_velocity + ball.y_position))
@@ -134,4 +141,9 @@ void Game::CheckCollision()
 	}
 
 	// TODO #7 - If ball touches bottom of window, pause ball and display (render) defeat text with R to reset
+	if (ball.y_position == WINDOW_HEIGHT - 1 && ball.moving)
+	{
+		ball.moving = !ball.moving;
+	}
+
 }
