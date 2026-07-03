@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Game.h"
+#include <vector>
 
 Game::Game()
 {
@@ -17,15 +18,32 @@ void Game::Reset()
 
 	ball.visage = 'O';
 	ball.color = ConsoleColor::Cyan;
+	brick.clear();
 	ResetBall();
 
 	// TODO #2 - Add this brick and 4 more bricks to the vector
-	brick.width = 10;
-	brick.height = 2;
-	brick.x_position = 0;
-	brick.y_position = 5;
-	brick.doubleThick = true;
-	brick.color = ConsoleColor::DarkGreen;
+
+	Box tempBrick;
+	tempBrick.width = 10;
+	tempBrick.height = 2;
+	tempBrick.x_position = 0;
+	tempBrick.y_position = 5;
+	tempBrick.doubleThick = true;
+	tempBrick.color = ConsoleColor::DarkGreen;
+	brick.push_back(tempBrick);
+
+	for (int i = 1; i < 5; i++)
+	{
+		Box tempBrick2;
+		tempBrick2.width = 10;
+		tempBrick2.height = 2;
+		tempBrick2.x_position = i * 10;
+		tempBrick2.y_position = 5;
+		tempBrick2.doubleThick = true;
+		tempBrick2.color = ConsoleColor::DarkGreen;
+		brick.push_back(tempBrick2);
+
+	}
 }
 
 void Game::ResetBall()
@@ -62,14 +80,32 @@ bool Game::Update()
 //  All rendering, including text, should occur in the Render function
 void Game::Render() const
 {
+	std::string winMsg = "You win! Press 'R' to play again.";
+	std::string loseMsg = "You lose.  Press 'R' to play again.";
+
 	Console::Lock(true);
 	Console::Clear();
 	
 	paddle.Draw();
 	ball.Draw();
 
+	if (brick.empty() == true)
+	{
+		Console::SetCursorPosition(((WINDOW_WIDTH / 2) - (static_cast<int>(winMsg.length()) / 2)), (WINDOW_HEIGHT / 2));
+		std::cout << winMsg << std::endl;
+	}
+
+	if (ball.y_position == WINDOW_HEIGHT - 1)
+	{
+		Console::SetCursorPosition(((WINDOW_WIDTH / 2) - (static_cast<int>(loseMsg.length()) /2)),  (WINDOW_HEIGHT / 2));
+		std::cout << loseMsg << std::endl;
+	}
+
 	// TODO #3 - Update render to render all bricks
-	brick.Draw();
+	for (int i = 0; i < brick.size(); i++)
+	{
+		brick[i].Draw();
+	}
 
 	Console::Lock(false);
 }
@@ -77,17 +113,27 @@ void Game::Render() const
 void Game::CheckCollision()
 {
 	// TODO #4 - Update collision to check all bricks
-	if (brick.Contains(ball.x_position + ball.x_velocity, ball.y_position + ball.y_velocity))
+	for (int i = 0; i < brick.size(); i++)
 	{
-		brick.color = ConsoleColor(brick.color - 1);
-		ball.y_velocity *= -1;
+		if (brick[i].Contains(ball.x_position + ball.x_velocity, ball.y_position + ball.y_velocity))
+		{
+			brick[i].color = ConsoleColor(brick[i].color - 1);
+			ball.y_velocity *= -1;
 
-		// TODO #5 - If the ball hits the same brick 3 times (color == black), remove it from the vector
-
+			// TODO #5 - If the ball hits the same brick 3 times (color == black), remove it from the vector
+			if (brick[i].color == ConsoleColor::Black)
+			{
+				brick.erase(brick.begin() + i);
+				break;
+			}
+		}
 	}
 
 	// TODO #6 - If no bricks remain, pause ball and display (render) victory text with R to reset
-
+	if (brick.empty() && ball.moving)
+	{
+		ball.moving = !ball.moving;
+	}
 
 	if (paddle.Contains(ball.x_position + ball.x_velocity, ball.y_velocity + ball.y_position))
 	{
@@ -95,4 +141,9 @@ void Game::CheckCollision()
 	}
 
 	// TODO #7 - If ball touches bottom of window, pause ball and display (render) defeat text with R to reset
+	if (ball.y_position == WINDOW_HEIGHT - 1 && ball.moving)
+	{
+		ball.moving = !ball.moving;
+	}
+
 }
